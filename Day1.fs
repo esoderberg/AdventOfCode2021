@@ -3,7 +3,7 @@
 open System.Collections
 
 
-let FileInput = Seq.map (fun line -> int line) (System.IO.File.ReadLines "Input/Day1.txt")
+let FileInput = Seq.map (fun line -> int line) (System.IO.File.ReadAllLines "Input/Day1.txt")
 let TestInput = [199; 200; 208;210;200;207;240;269;260;263]
 
 let CountIncreases pairs = Seq.fold (fun acc (prev,curr) -> acc + if prev < curr then 1 else 0) 0 pairs
