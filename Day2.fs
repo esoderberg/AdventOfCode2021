@@ -1,7 +1,7 @@
 ﻿module Day2
 
 let FileInput = Seq.cache (System.IO.File.ReadLines "Input/Day2.txt")
-let TestInput = ["forward 5"; "down 5"; "forward 8"; "up 3"; "down 8"; "forward 2"];
+let TestInput = List.toSeq ["forward 5"; "down 5"; "forward 8"; "up 3"; "down 8"; "forward 2"];
 
 let ParseCommand (cmd : string) = 
     let parts = cmd.Split ' '
@@ -27,8 +27,8 @@ let CalculateDestinationCoordinates position commandInterpreter commandSeq resul
  
 let Run commandInterpreter startpos input = CalculateDestinationCoordinates startpos commandInterpreter input
 
-let Execute = 
-    let commands = Seq.map ParseCommand FileInput
+let Execute useFile = 
+    let commands = Seq.map ParseCommand (if useFile then FileInput else TestInput)
     let result_day1 = Run SimpleCommandInterpreter (0,0) commands (fun (hor,ver) -> hor*ver)
     let result_day2 = Run AdvancedCommmandInterpreter (0,0,0) commands (fun (hor,ver,_) -> hor*ver)
     printfn "Day 2, Part 1: %d" result_day1

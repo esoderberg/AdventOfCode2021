@@ -18,6 +18,7 @@ let ExecutePart2 input =
     let zipped_windows = Seq.zip three_measure_windows (Seq.skip 1 three_measure_windows)
     printfn "Day 1, Part 2: %d" (CountIncreases zipped_windows)
 
-let Execute = 
-    ExecutePart1 FileInput
-    ExecutePart2 FileInput
+let Execute useFile = 
+    let input = if useFile then FileInput else List.toSeq TestInput
+    ExecutePart1 input
+    ExecutePart2 input
