@@ -42,7 +42,8 @@ module Bingo =
         // Check for victory extending from pos
         member this.CheckWin pos = (this.WinningRow pos.row) || (this.WinningColumn pos.col) 
             // || if(pos.row+pos.col = this.Size-1 || pos.row=pos.col) then ((this.WinningDiagonal true) || (this.WinningDiagonal false)) else false
-            
+        member this.SumUnmarked = List.sumBy (fun (k, (v: BoardCell)) -> if not v.marked then v.number else 0) (Map.toList this.BoardPos)
+
     let Print (board: BingoBoard) = 
         let positions = [for i in 0..board.Size-1 -> [for j in 0..board.Size-1 -> {row=i;col=j}]]
         let rowStringifier = (fun pos -> if board.IsMarked pos then $"""{$"({board.NumberOf pos})",4}""" else $"{board.NumberOf pos,4}")
@@ -91,31 +92,45 @@ let PlayBingoRound number boards = (List.map (Bingo.Play number) boards)
 
 // Play bingo and return the first winning board
 let rec PlayBingo numbers boards = 
-    
     let drawnNumber = List.head numbers
     printfn "Drew number %d" drawnNumber
     let updatedBoards = PlayBingoRound drawnNumber boards
-    let wonBoards = List.filter (fun (board: Bingo.BingoBoard) -> board.Won) updatedBoards
-    if wonBoards.Length > 0 then (drawnNumber, wonBoards)
+    let wonBoards, remainingBoards = List.partition (fun (board: Bingo.BingoBoard) -> board.Won) updatedBoards
+    if wonBoards.Length > 0 then (drawnNumber, wonBoards, (List.tail numbers, remainingBoards))
     else
         printfn "-------------------------------------------"
         PlayBingo (List.tail numbers) updatedBoards
 
-    
 
-let ExecutePart1 input = 
+let rec PlayUntilLastBoardWins numbers boards = 
+    let (winNum, wonBoards, (numbersLeft, boardsLeft)) = PlayBingo numbers boards 
+    if boardsLeft.Length = 0 then
+        (winNum, wonBoards)
+    else
+        PlayUntilLastBoardWins numbersLeft boardsLeft
+
+
+let ExecutePart1 input =
     let (numbers, boards) = ParseInput input
-    let (winningNumber, winningBoards) = PlayBingo numbers boards
+    let (winningNumber, winningBoards, _) = PlayBingo numbers boards
     let winningBoard = List.head winningBoards
-    let sumUnmarked = Seq.sumBy (fun (k, (v: Bingo.BoardCell)) -> if not v.marked then v.number else 0) (Map.toSeq winningBoard.BoardPos)
+    let sumUnmarked = winningBoard.SumUnmarked
     printfn "Unmarked sum: %d" sumUnmarked
     printfn "Winning number %d" winningNumber
     printfn "Day 4, part 1: %d" (sumUnmarked * winningNumber)
 
     
-    
+let ExecutePart2 input =
+    let (numbers, boards) = ParseInput input
+    let (winningNumber, winningBoards) = PlayUntilLastBoardWins numbers boards
+    let winningBoard = List.head winningBoards
+    let sumUnmarked = winningBoard.SumUnmarked
+    printfn "Unmarked sum: %d" sumUnmarked
+    printfn "Winning number %d" winningNumber
+    printfn "Day 4, part 2: %d" (sumUnmarked * winningNumber)
 
-let Execute (withFileInput:bool) = 
+let Execute (withFileInput:bool) =
     let input = if withFileInput then List.ofSeq (GetInput 4) else List.ofSeq (GetTestInput 4)
     ExecutePart1 input
+    ExecutePart2 input
     0
