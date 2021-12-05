@@ -85,8 +85,23 @@ let ExecutePart2 (lineSegments:LineSegment list) =
     let overlaps = Map.count (Map.filter (fun k v -> v > 1) overlapMap)
     printfn "Day 5, Part 2: %d" overlaps
 
+
+let ExecutePart2Alt (lineSegments:LineSegment list) =
+    let cells = List.collect LineSegment.GetCoveredCells lineSegments
+    let overlapMap = List.countBy id cells
+    let overlaps = List.length ((List.filter (fun (k,v) -> v > 1) overlapMap))
+    printfn "Day 5, Part 2: %d" overlaps
+
+
 let Execute withFileInput = 
     let input = if withFileInput then GetInput 5 else GetTestInput 5
     let lineSegments = List.ofSeq (ParseInput input)
-    //ExecutePart1 lineSegments
+    ExecutePart1 lineSegments
+    let stopwatch = System.Diagnostics.Stopwatch.StartNew()
     ExecutePart2 lineSegments
+    stopwatch.Stop()
+    printfn "Part2 first variant ms: %d" stopwatch.ElapsedMilliseconds
+    stopwatch.Restart()
+    ExecutePart2Alt lineSegments
+    stopwatch.Stop()
+    printfn "Part2 second variant ms: %d" stopwatch.ElapsedMilliseconds
