@@ -49,12 +49,23 @@ let MapAddOverlap cell map=
         | None -> (cell,1)
     Map.add key value map
 
+let DictAddOverlap cell (map :Dictionary<int*int,int>)= 
+    map.[cell] <- map.GetValueOrDefault(cell, 0) + 1
+    map
+
 let CalculateOverlaps (cells:(int*int) list) =
     let rec innerCalculateOverlaps (remCells:(int*int) list) overlapMap =
         match remCells with 
             |head::tail -> innerCalculateOverlaps tail (MapAddOverlap head overlapMap)
             |_ -> overlapMap
     innerCalculateOverlaps cells (Map<int*int,int> [])
+
+let CalculateOverlapsDict (cells:(int*int) list) =
+    let rec innerCalculateOverlaps (remCells:(int*int) list) overlapMap =
+        match remCells with 
+            |head::tail -> innerCalculateOverlaps tail (DictAddOverlap head overlapMap)
+            |_ -> overlapMap
+    innerCalculateOverlaps cells (Dictionary<int*int,int> [])
 
 let PrintOverlapMap map =
     let mapArr = Map.toArray map
@@ -77,7 +88,8 @@ let ExecutePart1 (lineSegments:LineSegment list) =
     //PrintOverlapMap overlapMap // For debugging purposes, not very useful on the real input
     let overlaps =  Map.count (Map.filter (fun k v -> v > 1) overlapMap)
     printfn "Day 5, Part 1: %d" overlaps
-    
+   
+// Uses a Map to calculate overlaps
 let ExecutePart2 (lineSegments:LineSegment list) = 
     let cells = (List.collect LineSegment.GetCoveredCells lineSegments)
     let overlapMap = CalculateOverlaps cells
@@ -85,13 +97,19 @@ let ExecutePart2 (lineSegments:LineSegment list) =
     let overlaps = Map.count (Map.filter (fun k v -> v > 1) overlapMap)
     printfn "Day 5, Part 2: %d" overlaps
 
-
+// Uses List.countBy for overlaps
 let ExecutePart2Alt (lineSegments:LineSegment list) =
     let cells = List.collect LineSegment.GetCoveredCells lineSegments
     let overlapMap = List.countBy id cells
     let overlaps = List.length ((List.filter (fun (k,v) -> v > 1) overlapMap))
     printfn "Day 5, Part 2: %d" overlaps
 
+// Uses a dictionary to calculate overlaps
+let ExecutePart2Alt2 (lineSegments:LineSegment list) =
+    let cells = List.collect LineSegment.GetCoveredCells lineSegments
+    let overlapMap = CalculateOverlapsDict cells
+    let overlaps = List.length [for kvpair in overlapMap do if kvpair.Value > 1 then yield kvpair.Key ]
+    printfn "Day 5, Part 2: %d" overlaps
 
 let Execute withFileInput = 
     let input = if withFileInput then GetInput 5 else GetTestInput 5
@@ -100,8 +118,14 @@ let Execute withFileInput =
     let stopwatch = System.Diagnostics.Stopwatch.StartNew()
     ExecutePart2 lineSegments
     stopwatch.Stop()
-    printfn "Part2 first variant ms: %d" stopwatch.ElapsedMilliseconds
+    printfn "Part2 Map variant ms: %d" stopwatch.ElapsedMilliseconds
+
     stopwatch.Restart()
     ExecutePart2Alt lineSegments
     stopwatch.Stop()
-    printfn "Part2 second variant ms: %d" stopwatch.ElapsedMilliseconds
+    printfn "Part2 CountBy variant ms: %d" stopwatch.ElapsedMilliseconds
+
+    stopwatch.Restart()
+    ExecutePart2Alt2 lineSegments
+    stopwatch.Stop()
+    printfn "Part2 dict variant ms: %d" stopwatch.ElapsedMilliseconds
