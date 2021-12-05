@@ -21,5 +21,5 @@ let main argv =
             let useFileInput = if inputChoice ="" then true else false
             ExecuteDay day useFileInput
         else
-            ExecuteDay argv.[0] (if argv.Length > 1 then true else false)
+            ExecuteDay argv.[0] (if argv.Length > 1 then false else true)
     0 // return an integer exit code
