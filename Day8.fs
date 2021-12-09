@@ -46,10 +46,13 @@ let Solve (signals:string[], digits:string[]) =
 
 
 let ExecutePart2 (input:(string[]*string[]) list) = 
+    let stopwatch = System.Diagnostics.Stopwatch.StartNew()
     let solved = List.map Solve input
     let sum = List.sum solved
-    List.iter (fun s -> printfn "%d" s) solved
+    // List.iter (fun s -> printfn "%d" s) solved
     printfn "Day 8, Part 2: %d" sum
+    stopwatch.Stop()
+    printfn "Time: %dms" stopwatch.ElapsedMilliseconds
 
 let ExecutePart1 (input:(string[]*string[]) list) = 
     let digits = List.map (fun i -> snd i) input
