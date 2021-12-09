@@ -4,7 +4,8 @@ open AoCFile
 
 // Gets the cells in a + pattern with x,y in the center (not in the list). 
 // if a cell would go below zero or above it's respective max it will not be included.
-let GetCellPlus (x,y) (xmax,ymax) = List.filter (fun (x,y) -> 0 <= x && x <= xmax && 0 <= y && y <= ymax) [(x,y-1);(x+1,y);(x,y+1);(x-1,y)]
+let IsCellInGrid (xmax,ymax) (x,y) =  0 <= x && x <= xmax && 0 <= y && y <= ymax
+let GetCellPlus (x,y) (xmax,ymax) = List.filter (IsCellInGrid (xmax,ymax)) [(x,y-1);(x+1,y);(x,y+1);(x-1,y)]
 
 let rec GetBasins (grid: int [][]) (x,y) = 
     let (xmax,ymax) = (grid.[0].Length-1, grid.Length-1)
