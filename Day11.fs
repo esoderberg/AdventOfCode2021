@@ -49,8 +49,20 @@ let ExecutePart1 grid =
     //List.iter (fun (f,v) -> printfn "%d" v) flashes
     ()
 
+let rec FindSimulataneousFlashStep grid currentStep = 
+    let flashes = CountJustFlashed grid
+    if flashes = 100 then 
+        currentStep
+    else
+        let grid = SimulateStep grid
+        FindSimulataneousFlashStep grid (currentStep+1)
+
+let ExecutePart2 grid = 
+    let step = FindSimulataneousFlashStep grid 0
+    printfn "Day 11, Part 2: %d" step
+
 let Execute withRealInput = 
     let input = if withRealInput then GetInput 11 else GetTestInput 11
     let grid = Array.ofSeq (Seq.map (fun str -> Array.ofSeq (Seq.map (fun c -> (int c) - (int '0')) str)) input)
     ExecutePart1 grid
-    ()
+    ExecutePart2 grid
