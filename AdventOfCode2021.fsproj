@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="GridUtil.fs" />
     <Compile Include="AoCFile.fs" />
+    <Compile Include="Day11.fs" />
     <Compile Include="Day10.fs" />
     <Compile Include="Day9.fs" />
     <Compile Include="Day8.fs" />
