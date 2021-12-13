@@ -36,10 +36,22 @@ let ExecutePart1 dots instructions =
     let result = ExecuteInstruction dots (List.head instructions)
     printfn "Day 13, Part 1: %d" result.Length
 
+let ExecutePart2 dots instructions =
+    let result = List.fold (fun dots instruction -> ExecuteInstruction dots instruction) dots instructions
+    let dotSet = set result 
+    let xlim = (List.maxBy (fun dot -> dot.x) result).x
+    let ylim = (List.maxBy (fun dot -> dot.y) result).y
+    printfn "Day 13, Part 2:"
+    for y in 0..ylim do
+        for x in 0..xlim do
+            printf (if Set.contains {x=x;y=y} dotSet then "#" else ".")
+        printfn ""
+
 let Execute withRealInput =
     let lines = if withRealInput then GetInput 13 else GetTestInput 13
     let dotsRaw, instructionsRaw = List.partition (fun (line:string) ->  line.Contains ',') (Seq.toList lines)
     let instructions = List.map ParseInstruction (List.tail instructionsRaw)
     let dots = List.map ParseDot dotsRaw
     ExecutePart1 dots instructions
+    ExecutePart2 dots instructions
     ()
