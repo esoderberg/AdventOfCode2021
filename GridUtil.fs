@@ -16,3 +16,7 @@ let GetCellPlus (grid:'a[][]) (x,y) = List.filter (IsCellInGrid grid) [(x,y-1);(
 // Gets cells in a 1-length square centered on x,y (x,y not included)
 // If a cell is out of bounds it is not included
 let GetCellSquare (grid:'a[][]) (x,y)= List.filter (IsCellInGrid grid) [(x,y-1);(x+1, y-1);(x+1,y);(x+1,y+1);(x,y+1);(x-1,y+1);(x-1,y);(x-1,y-1)]
+
+let PrintGrid (grid:int[][]) =
+    Array.iter (fun row -> printfn "%s" (String.concat "" (Array.map string row))) grid
+    printfn ""
